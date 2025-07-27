@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Zee Multi Services</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    .fade-in {
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="bg-indigo-50 min-h-screen">
+
+  <!-- Login Success Toast -->
+  <div id="loginSuccessToast" class="fixed top-5 right-5 bg-green-600 text-white px-6 py-3 rounded-xl shadow-lg text-lg font-semibold hidden z-50 animate-bounce">
+    ✅ Authentication Successful
+  </div>
+
+  <!-- LOGIN PAGE -->
+  <div id="loginPage" class="flex justify-center items-center min-h-screen bg-gradient-to-br from-indigo-600 to-blue-400">
+    <div class="bg-white p-10 rounded-2xl shadow-lg w-full max-w-sm">
+      <h2 class="text-2xl font-bold mb-6 text-center text-indigo-700">Zee Online Login</h2>
+      <input type="text" id="username" placeholder="Username" class="mb-4 w-full px-4 py-2 border rounded-xl" />
+      <input type="password" id="password" placeholder="Password" class="mb-6 w-full px-4 py-2 border rounded-xl" />
+      <button onclick="login()" class="bg-indigo-700 hover:bg-indigo-800 text-white w-full py-2 rounded-xl font-semibold">Login</button>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div id="mainApp" class="hidden flex">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-indigo-700 text-white min-h-screen p-6 space-y-4">
+      <img src="kk.jpg" alt="Zee Logo" style="width:2.5in; height:1.0in;" class="rounded-xl shadow-lg" />
+      <nav class="space-y-4">
+        <button onclick="showSection('dashboard')" class="flex items-center gap-2 w-full text-left px-4 py-2 rounded hover:bg-indigo-600">
+          <i data-lucide="home" class="w-5 h-5"></i> Dashboard
+        </button>
+        <button onclick="showSection('entry')" class="flex items-center gap-2 w-full text-left px-4 py-2 rounded hover:bg-indigo-600">
+          <i data-lucide="user-plus" class="w-5 h-5"></i> Customer Entry
+        </button>
+        <button onclick="showSection('quickEntry')" class="flex items-center gap-2 w-full text-left px-4 py-2 rounded hover:bg-indigo-600">
+          <i data-lucide="bolt" class="w-5 h-5"></i> Quick Entry
+        </button>
+        <button onclick="showSection('cashDenomination')" class="flex items-center gap-2 w-full text-left px-4 py-2 rounded hover:bg-indigo-600">
+          <i data-lucide="coins" class="w-5 h-5"></i> Cash Denomination
+        </button>
+        <button onclick="showSection('report')" class="flex items-center gap-2 w-full text-left px-4 py-2 rounded hover:bg-indigo-600">
+          <i data-lucide="file-text" class="w-5 h-5"></i> Customer Report
+        </button>
+        <button onclick="showSection('quickReport')" class="flex items-center gap-2 w-full text-left px-4 py-2 rounded hover:bg-indigo-600">
+          <i data-lucide="file-text" class="w-5 h-5"></i> Quick Report
+        </button>
+        <button onclick="logout()" class="flex items-center gap-2 w-full text-left px-4 py-2 rounded hover:bg-red-600">
+          <i data-lucide="log-out" class="w-5 h-5"></i> Logout
+        </button>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-6 space-y-10">
+
+
+      <!-- Global Top Header (Shown on Every Page) -->
+      <div class="bg-white p-6 rounded-2xl shadow text-indigo-700 text-xl font-semibold flex items-center justify-between fade-in">
+        <span>Welcome Zee Online Multi Services</span>
+        <span>Email : zeeonlne087@gmail.com</span>
+ <span>Location : Parbhani</span>
+<span>User : 9763551522</span>
+
+
+
+<div class="text-center mt-4">
+  <h2 id="clock" class="text-2xl font-bold text-indigo-600"></h2>
+  <p id="day" class="text-lg text-gray-700"></p>
+</div>
+
+<div style="text-align: center;">
+<script>
+  function updateClock() {
+    const now = new Date();
+    
+    // Clock
+    let hours = now.getHours().toString().padStart(2, '0');
+    let minutes = now.getMinutes().toString().padStart(2, '0');
+    let seconds = now.getSeconds().toString().padStart(2, '0');
+    document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
+
+    // Day Name
+    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    let dayName = days[now.getDay()];
+    document.getElementById('day').textContent = `Today is: ${dayName}`;
+  }
+
+  // Update every second
+  setInterval(updateClock, 1000);
+  updateClock(); // initial call
+</script>
+</div>
+
+
+        <img src="logo.jpg" alt="Logo" class="w-16 h-16 rounded-full shadow-lg" />
+
+      </div>
+
+      <!-- Dashboard Section -->
+      <section id="dashboard" class="hidden fade-in">
+        <marquee behavior="scroll" direction="left" class="mt-2 text-red-600 text-lg font-semibold">
+          Labour Card Entry: Click on Customer Entry and fill customer details to maintain a record. Thanks !!!
+        </marquee>
+
+        <div style="text-align: center;">
+        <div class="flex justify-center mt-6">
+          <img src="image.jpg" alt="Zee Logo" style="width:6in; height:6in;" class="rounded-xl shadow-lg" />
+        </div>
+ </div>
+      </section>
+
+      <!-- Customer Entry Section -->
+      <section id="entry" class="hidden bg-white shadow-xl rounded-2xl p-6 max-w-3xl mx-auto fade-in">
+        <h2 class="text-2xl font-bold text-indigo-700 mb-6">Customer Entry</h2>
+        <form id="entryForm">
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">Name</label>
+            <input type="text" id="name" required class="w-full px-4 py-2 border rounded-xl" />
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">Mobile</label>
+            <input type="tel" id="mobile" required pattern="[0-9]{10}" class="w-full px-4 py-2 border rounded-xl" />
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">Aadhaar</label>
+            <input type="text" id="aadhaar" required pattern="[0-9]{12}" class="w-full px-4 py-2 border rounded-xl" />
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">WFC Visiting Date</label>
+            <input type="date" id="wfcVisitingDate" required class="w-full px-4 py-2 border rounded-xl" />
+          </div>
+          <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700">Gender</label>
+            <select id="gender" required class="w-full px-4 py-2 border rounded-xl">
+              <option value="">Select Gender</option>
+              <option>Male</option>
+              <option>Female</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="flex justify-between">
+            <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-xl hover:bg-blue-700">Save</button>
+            <button type="reset" class="bg-gray-300 text-gray-800 px-6 py-2 rounded-xl hover:bg-gray-400">Reset</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Quick Entry Section -->
+      <section id="quickEntry" class="hidden bg-white shadow-xl rounded-2xl p-6 max-w-3xl mx-auto fade-in">
+        <h2 class="text-2xl font-bold text-indigo-700 mb-6">Quick Entry</h2>
+        <form id="quickEntryForm">
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">Name</label>
+            <input type="text" id="quickName" required class="w-full px-4 py-2 border rounded-xl" />
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">Mobile</label>
+            <input type="tel" id="quickMobile" required pattern="[0-9]{10}" class="w-full px-4 py-2 border rounded-xl" />
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">Type</label>
+            <select id="quickType" required class="w-full px-4 py-2 border rounded-xl">
+              <option value="">Select Type</option>
+              <option value="New">New</option>
+              <option value="Renewal">Renewal</option>
+            </select>
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">Amount</label>
+            <input type="number" id="quickAmount" required class="w-full px-4 py-2 border rounded-xl" min="0" step="0.01" />
+          </div>
+          <div class="flex justify-between">
+            <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-xl hover:bg-blue-700">Save</button>
+            <button type="reset" class="bg-gray-300 text-gray-800 px-6 py-2 rounded-xl hover:bg-gray-400">Reset</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Cash Denomination Section -->
+      <section id="cashDenomination" class="hidden bg-white shadow-xl rounded-2xl p-6 max-w-3xl mx-auto fade-in">
+        <h2 class="text-2xl font-bold text-indigo-700 mb-6">Cash Denomination</h2>
+        <form id="cashDenomForm">
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">Name</label>
+            <input type="text" id="cashName" required class="w-full px-4 py-2 border rounded-xl" />
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">Mobile</label>
+            <input type="tel" id="cashMobile" required pattern="[0-9]{10}" class="w-full px-4 py-2 border rounded-xl" />
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">Cash Denominations</label>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm text-gray-600">₹500</label>
+                <input type="number" id="denom500" min="0" class="w-full px-4 py-2 border rounded-xl" oninput="calculateCashTotal()" />
+              </div>
+              <div>
+                <label class="block text-sm text-gray-600">₹200</label>
+                <input type="number" id="denom200" min="0" class="w-full px-4 py-2 border rounded-xl" oninput="calculateCashTotal()" />
+              </div>
+              <div>
+                <label class="block text-sm text-gray-600">₹100</label>
+                <input type="number" id="denom100" min="0" class="w-full px-4 py-2 border rounded-xl" oninput="calculateCashTotal()" />
+              </div>
+              <div>
+                <label class="block text-sm text-gray-600">₹50</label>
+                <input type="number" id="denom50" min="0" class="w-full px-4 py-2 border rounded-xl" oninput="calculateCashTotal()" />
+              </div>
+              <div>
+                <label class="block text-sm text-gray-600">₹20</label>
+                <input type="number" id="denom20" min="0" class="w-full px-4 py-2 border rounded-xl" oninput="calculateCashTotal()" />
+              </div>
+              <div>
+                <label class="block text-sm text-gray-600">₹10</label>
+                <input type="number" id="denom10" min="0" class="w-full px-4 py-2 border rounded-xl" oninput="calculateCashTotal()" />
+              </div>
+            </div>
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">Total Amount</label>
+            <input type="number" id="cashAmount" readonly class="w-full px-4 py-2 border rounded-xl bg-gray-100" value="0.00" />
+          </div>
+          <div class="flex justify-between">
+            <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-xl hover:bg-blue-700">Save</button>
+            <button type="reset" class="bg-gray-300 text-gray-800 px-6 py-2 rounded-xl hover:bg-gray-400" onclick="resetCashForm()">Reset</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Customer Report Section -->
+      <section id="report" class="hidden bg-white shadow-xl rounded-2xl p-6 max-w-5xl mx-auto fade-in">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-semibold text-indigo-700">Customer Report</h2>
+          <div class="flex gap-2">
+            <button onclick="exportToPDF()" class="bg-purple-600 text-white px-4 py-2 rounded-xl hover:bg-purple-700 flex items-center gap-2">
+              <i data-lucide="file-down" class="w-5 h-5"></i> Export PDF
+            </button>
+            <button onclick="exportToExcel()" class="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 flex items-center gap-2">
+              <i data-lucide="file-spreadsheet" class="w-5 h-5"></i> Export Excel
+            </button>
+            <button onclick="printReport()" class="bg-green-600 text-white px-4 py-2 rounded-xl hover:bg-green-700 flex items-center gap-2">
+              <i data-lucide="printer" class="w-5 h-5"></i> Print Report
+            </button>
+          </div>
+        </div>
+        <div class="mb-4">
+          <input type="text" id="searchInput" placeholder="Search by Name, Mobile, Aadhaar, WFC Visiting Date, or Gender" class="w-full px-4 py-2 border rounded-xl" oninput="searchTable()" />
+        </div>
+        <table class="w-full table-auto border text-sm md:text-base">
+          <thead>
+            <tr class="bg-indigo-200 text-left">
+              <th class="border px-4 py-2">#</th>
+              <th class="border px-4 py-2">Name</th>
+              <th class="border px-4 py-2">Mobile</th>
+              <th class="border px-4 py-2">Aadhaar</th>
+              <th class="border px-4 py-2">WFC Visiting Date</th>
+              <th class="border px-4 py-2">Gender</th>
+              <th class="border px-4 py-2">Action</th>
+            </tr>
+          </thead>
+          <tbody id="reportTable" class="text-center"></tbody>
+        </table>
+      </section>
+
+      <!-- Quick Report Section -->
+      <section id="quickReport" class="hidden bg-white shadow-xl rounded-2xl p-6 max-w-5xl mx-auto fade-in">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-semibold text-indigo-700">Quick Report</h2>
+          <div class="flex gap-2">
+            <button onclick="exportQuickToPDF()" class="bg-purple-600 text-white px-4 py-2 rounded-xl hover:bg-purple-700 flex items-center gap-2">
+              <i data-lucide="file-down" class="w-5 h-5"></i> Export PDF
+            </button>
+            <button onclick="exportQuickToExcel()" class="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 flex items-center gap-2">
+              <i data-lucide="file-spreadsheet" class="w-5 h-5"></i> Export Excel
+            </button>
+            <button onclick="printQuickReport()" class="bg-green-600 text-white px-4 py-2 rounded-xl hover:bg-green-700 flex items-center gap-2">
+              <i data-lucide="printer" class="w-5 h-5"></i> Print Report
+            </button>
+          </div>
+        </div>
+        <div class="mb-4">
+          <input type="text" id="quickSearchInput" placeholder="Search by Name, Mobile, Type, or Amount" class="w-full px-4 py-2 border rounded-xl" oninput="searchQuickTable()" />
+        </div>
+        <table class="w-full table-auto border text-sm md:text-base">
+          <thead>
+            <tr class="bg-indigo-200 text-left">
+              <th class="border px-4 py-2">#</th>
+              <th class="border px-4 py-2">Name</th>
+              <th class="border px-4 py-2">Mobile</th>
+              <th class="border px-4 py-2">Type</th>
+              <th class="border px-4 py-2">Amount</th>
+              <th class="border px-4 py-2">Action</th>
+            </tr>
+          </thead>
+          <tbody id="quickReportTable" class="text-center"></tbody>
+        </table>
+      </section>
+
+      <!-- Thank You Message -->
+      <div id="thankYouMsg" class="fixed top-5 right-5 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg text-lg font-semibold hidden">
+        ✅ Thanks for Entry!
+      </div>
+    </main>
+  </div>
+
+  <!-- Script Section -->
+  <script>
+    lucide.createIcons();
+
+    const { jsPDF } = window.jspdf;
+    const entryForm = document.getElementById("entryForm");
+    const quickEntryForm = document.getElementById("quickEntryForm");
+    const cashDenomForm = document.getElementById("cashDenomForm");
+    const reportTable = document.getElementById("reportTable");
+    const quickReportTable = document.getElementById("quickReportTable");
+    const searchInput = document.getElementById("searchInput");
+    const quickSearchInput = document.getElementById("quickSearchInput");
+
+    function login() {
+      const user = document.getElementById("username").value;
+      const pass = document.getElementById("password").value;
+      if (user === "9763551522" && pass === "1234") {
+        document.getElementById("loginSuccessToast").classList.remove("hidden");
+        setTimeout(() => {
+          document.getElementById("loginSuccessToast").classList.add("hidden");
+          document.getElementById("loginPage").style.display = "none";
+          document.getElementById("mainApp").classList.remove("hidden");
+          showSection("dashboard");
+        }, 2000);
+      } else {
+        alert("Invalid Username or Password");
+      }
+    }
+
+    function logout() {
+      location.reload();
+    }
+
+    function showSection(id) {
+      ["dashboard", "entry", "quickEntry", "cashDenomination", "report", "quickReport"].forEach(sec => {
+        const el = document.getElementById(sec);
+        if (el) {
+          el.classList.add("hidden");
+          el.classList.remove("fade-in");
+        }
+      });
+      const active = document.getElementById(id);
+      active.classList.remove("hidden");
+      active.classList.add("fade-in");
+      if (id === "report") {
+        loadData();
+        searchInput.value = "";
+        searchTable();
+      } else if (id === "quickReport") {
+        loadQuickData();
+        quickSearchInput.value = "";
+        searchQuickTable();
+      }
+    }
+
+    // Customer Entry Functions
+    function loadData(searchTerm = "") {
+      const entries = JSON.parse(localStorage.getItem("customers")) || [];
+      reportTable.innerHTML = "";
+      const filteredEntries = entries.filter(entry =>
+        entry.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        entry.mobile.includes(searchTerm) ||
+        entry.aadhaar.includes(searchTerm) ||
+        entry.wfcVisitingDate.includes(searchTerm) ||
+        entry.gender.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      filteredEntries.forEach((entry, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td class="border px-4 py-2">${index + 1}</td>
+          <td class="border px-4 py-2">${entry.name}</td>
+          <td class="border px-4 py-2">${entry.mobile}</td>
+          <td class="border px-4 py-2">${entry.aadhaar}</td>
+          <td class="border px-4 py-2">${entry.wfcVisitingDate}</td>
+          <td class="border px-4 py-2">${entry.gender}</td>
+          <td class="border px-4 py-2">
+            <button onclick="deleteEntry(${entries.indexOf(entry)})" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">🗑️ Delete</button>
+          </td>
+        `;
+        reportTable.appendChild(row);
+      });
+    }
+
+    function searchTable() {
+      const searchTerm = searchInput.value;
+      loadData(searchTerm);
+    }
+
+    function deleteEntry(index) {
+      const entries = JSON.parse(localStorage.getItem("customers")) || [];
+      if (confirm("Are you sure you want to delete this entry?")) {
+        entries.splice(index, 1);
+        localStorage.setItem("customers", JSON.stringify(entries));
+        loadData(searchInput.value);
+      }
+    }
+
+    function exportToPDF() {
+      const doc = new jsPDF();
+      doc.setFontSize(18);
+      doc.text("Customer Report", 14, 20);
+      doc.setFontSize(12);
+      const entries = JSON.parse(localStorage.getItem("customers")) || [];
+      const filteredEntries = entries.filter(entry =>
+        entry.name.toLowerCase().includes(searchInput.value.toLowerCase()) ||
+        entry.mobile.includes(searchInput.value) ||
+        entry.aadhaar.includes(searchInput.value) ||
+        entry.wfcVisitingDate.includes(searchInput.value) ||
+        entry.gender.toLowerCase().includes(searchInput.value.toLowerCase())
+      );
+      let y = 30;
+      doc.text("#   Name                  Mobile            Aadhaar           WFC Date          Gender", 14, y);
+      y += 10;
+      doc.line(14, y, 196, y);
+      y += 10;
+      filteredEntries.forEach((entry, index) => {
+        doc.text(`${index + 1}   ${entry.name.padEnd(20)} ${entry.mobile.padEnd(15)} ${entry.aadhaar.padEnd(15)} ${entry.wfcVisitingDate.padEnd(15)} ${entry.gender}`, 14, y);
+        y += 10;
+      });
+      doc.save("Customer_Report.pdf");
+    }
+
+    function exportToExcel() {
+      const entries = JSON.parse(localStorage.getItem("customers")) || [];
+      const filteredEntries = entries.filter(entry =>
+        entry.name.toLowerCase().includes(searchInput.value.toLowerCase()) ||
+        entry.mobile.includes(searchInput.value) ||
+        entry.aadhaar.includes(searchInput.value) ||
+        entry.wfcVisitingDate.includes(searchInput.value) ||
+        entry.gender.toLowerCase().includes(searchInput.value.toLowerCase())
+      );
+      const data = filteredEntries.map((entry, index) => ({
+        "#": index + 1,
+        Name: entry.name,
+        Mobile: entry.mobile,
+        Aadhaar: entry.aadhaar,
+        "WFC Visiting Date": entry.wfcVisitingDate,
+        Gender: entry.gender
+      }));
+      const ws = XLSX.utils.json_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Customers");
+      XLSX.writeFile(wb, "Customer_Report.xlsx");
+    }
+
+    function printReport() {
+      const printContent = document.getElementById("report").outerHTML;
+      const originalContent = document.body.innerHTML;
+      document.body.innerHTML = printContent;
+      window.print();
+      document.body.innerHTML = originalContent;
+      location.reload();
+    }
+
+    entryForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const entry = {
+        name: document.getElementById("name").value.trim(),
+        mobile: document.getElementById("mobile").value.trim(),
+        aadhaar: document.getElementById("aadhaar").value.trim(),
+        wfcVisitingDate: document.getElementById("wfcVisitingDate").value,
+        gender: document.getElementById("gender").value
+      };
+      const existing = JSON.parse(localStorage.getItem("customers")) || [];
+      existing.push(entry);
+      localStorage.setItem("customers", JSON.stringify(existing));
+      entryForm.reset();
+      showThankYou();
+      showSection("report");
+    });
+
+    // Quick Entry Functions
+    function loadQuickData(searchTerm = "") {
+      const quickEntries = JSON.parse(localStorage.getItem("quickCustomers")) || [];
+      quickReportTable.innerHTML = "";
+      const filteredQuickEntries = quickEntries.filter(entry =>
+        entry.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        entry.mobile.includes(searchTerm) ||
+        entry.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        entry.amount.toString().includes(searchTerm)
+      );
+      filteredQuickEntries.forEach((entry, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td class="border px-4 py-2">${index + 1}</td>
+          <td class="border px-4 py-2">${entry.name}</td>
+          <td class="border px-4 py-2">${entry.mobile}</td>
+          <td class="border px-4 py-2">${entry.type}</td>
+          <td class="border px-4 py-2">${entry.amount}</td>
+          <td class="border px-4 py-2">
+            <button onclick="deleteQuickEntry(${quickEntries.indexOf(entry)})" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">🗑️ Delete</button>
+          </td>
+        `;
+        quickReportTable.appendChild(row);
+      });
+    }
+
+    function searchQuickTable() {
+      const searchTerm = quickSearchInput.value;
+      loadQuickData(searchTerm);
+    }
+
+    function deleteQuickEntry(index) {
+      const quickEntries = JSON.parse(localStorage.getItem("quickCustomers")) || [];
+      if (confirm("Are you sure you want to delete this entry?")) {
+        quickEntries.splice(index, 1);
+        localStorage.setItem("quickCustomers", JSON.stringify(quickEntries));
+        loadQuickData(quickSearchInput.value);
+      }
+    }
+
+    function exportQuickToPDF() {
+      const doc = new jsPDF();
+      doc.setFontSize(18);
+      doc.text("Quick Report", 14, 20);
+      doc.setFontSize(12);
+      const quickEntries = JSON.parse(localStorage.getItem("quickCustomers")) || [];
+      const filteredQuickEntries = quickEntries.filter(entry =>
+        entry.name.toLowerCase().includes(quickSearchInput.value.toLowerCase()) ||
+        entry.mobile.includes(quickSearchInput.value) ||
+        entry.type.toLowerCase().includes(quickSearchInput.value.toLowerCase()) ||
+        entry.amount.toString().includes(quickSearchInput.value)
+      );
+      let y = 30;
+      doc.text("#   Name                  Mobile            Type              Amount", 14, y);
+      y += 10;
+      doc.line(14, y, 196, y);
+      y += 10;
+      filteredQuickEntries.forEach((entry, index) => {
+        doc.text(`${index + 1}   ${entry.name.padEnd(20)} ${entry.mobile.padEnd(15)} ${entry.type.padEnd(15)} ${entry.amount}`, 14, y);
+        y += 10;
+      });
+      doc.save("Quick_Report.pdf");
+    }
+
+    function exportQuickToExcel() {
+      const quickEntries = JSON.parse(localStorage.getItem("quickCustomers")) || [];
+      const filteredQuickEntries = quickEntries.filter(entry =>
+        entry.name.toLowerCase().includes(quickSearchInput.value.toLowerCase()) ||
+        entry.mobile.includes(quickSearchInput.value) ||
+        entry.type.toLowerCase().includes(quickSearchInput.value.toLowerCase()) ||
+        entry.amount.toString().includes(quickSearchInput.value)
+      );
+      const data = filteredQuickEntries.map((entry, index) => ({
+        "#": index + 1,
+        Name: entry.name,
+        Mobile: entry.mobile,
+        Type: entry.type,
+        Amount: entry.amount
+      }));
+      const ws = XLSX.utils.json_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "QuickCustomers");
+      XLSX.writeFile(wb, "Quick_Report.xlsx");
+    }
+
+    function printQuickReport() {
+      const printContent = document.getElementById("quickReport").outerHTML;
+      const originalContent = document.body.innerHTML;
+      document.body.innerHTML = printContent;
+      window.print();
+      document.body.innerHTML = originalContent;
+      location.reload();
+    }
+
+    quickEntryForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const quickEntry = {
+        name: document.getElementById("quickName").value.trim(),
+        mobile: document.getElementById("quickMobile").value.trim(),
+        type: document.getElementById("quickType").value,
+        amount: parseFloat(document.getElementById("quickAmount").value).toFixed(2)
+      };
+      if (!/^[0-9]{10}$/.test(quickEntry.mobile)) {
+        alert("Please enter a valid 10-digit mobile number.");
+        return;
+      }
+      if (quickEntry.amount <= 0) {
+        alert("Please enter a valid amount greater than 0.");
+        return;
+      }
+      const existingQuick = JSON.parse(localStorage.getItem("quickCustomers")) || [];
+      existingQuick.push(quickEntry);
+      localStorage.setItem("quickCustomers", JSON.stringify(existingQuick));
+      quickEntryForm.reset();
+      showThankYou();
+      showSection("quickReport");
+    });
+
+    // Cash Denomination Functions
+    function calculateCashTotal() {
+      const denominations = [
+        { id: "denom500", value: 500 },
+        { id: "denom200", value: 200 },
+        { id: "denom100", value: 100 },
+        { id: "denom50", value: 50 },
+        { id: "denom20", value: 20 },
+        { id: "denom10", value: 10 }
+      ];
+      let total = 0;
+      denominations.forEach(denom => {
+        const count = parseInt(document.getElementById(denom.id).value) || 0;
+        total += count * denom.value;
+      });
+      document.getElementById("cashAmount").value = total.toFixed(2);
+    }
+
+    function resetCashForm() {
+      document.getElementById("cashDenomForm").reset();
+      document.getElementById("cashAmount").value = "0.00";
+    }
+
+    cashDenomForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const cashEntry = {
+        name: document.getElementById("cashName").value.trim(),
+        mobile: document.getElementById("cashMobile").value.trim(),
+        amount: parseFloat(document.getElementById("cashAmount").value).toFixed(2),
+        denom500: parseInt(document.getElementById("denom500").value) || 0,
+        denom200: parseInt(document.getElementById("denom200").value) || 0,
+        denom100: parseInt(document.getElementById("denom100").value) || 0,
+        denom50: parseInt(document.getElementById("denom50").value) || 0,
+        denom20: parseInt(document.getElementById("denom20").value) || 0,
+        denom10: parseInt(document.getElementById("denom10").value) || 0
+      };
+      if (!/^[0-9]{10}$/.test(cashEntry.mobile)) {
+        alert("Please enter a valid 10-digit mobile number.");
+        return;
+      }
+      if (cashEntry.amount <= 0) {
+        alert("Please enter a valid amount greater than 0.");
+        return;
+      }
+      const existingCash = JSON.parse(localStorage.getItem("cashDenominations")) || [];
+      existingCash.push(cashEntry);
+      localStorage.setItem("cashDenominations", JSON.stringify(existingCash));
+      cashDenomForm.reset();
+      document.getElementById("cashAmount").value = "0.00";
+      showThankYou();
+      showSection("dashboard");
+    });
+
+    function showThankYou() {
+      const msg = document.getElementById("thankYouMsg");
+      msg.classList.remove("hidden");
+      setTimeout(() => {
+        msg.classList.add("hidden");
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
