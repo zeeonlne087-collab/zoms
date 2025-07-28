@@ -109,7 +109,7 @@
     <main class="flex-1 p-6 space-y-10">
       <!-- Global Top Header -->
       <div class="bg-white p-6 rounded-2xl shadow text-indigo-700 text-xl font-semibold flex items-center justify-between fade-in">
-        <span>Welcome Zee Online Multi Services</span>
+        <span>Welcome : Zee Online Multi Services</span>
         <span>Email: zeeonlne087@gmail.com</span>
         <span>Location: Parbhani</span>
         <span>User: 9763551522</span>
@@ -213,6 +213,10 @@
             <label class="block text-sm font-medium text-gray-700">Cash Denominations</label>
             <div class="grid grid-cols-2 gap-4">
               <div>
+                <label class="block text-sm text-gray-600">₹2000</label>
+                <input type="number" id="denom2000" min="0" class="w-full px-4 py-2 border rounded-xl" oninput="calculateCashTotal()" />
+              </div>
+              <div>
                 <label class="block text-sm text-gray-600">₹500</label>
                 <input type="number" id="denom500" min="0" class="w-full px-4 py-2 border rounded-xl" oninput="calculateCashTotal()" />
               </div>
@@ -235,6 +239,10 @@
               <div>
                 <label class="block text-sm text-gray-600">₹10</label>
                 <input type="number" id="denom10" min="0" class="w-full px-4 py-2 border rounded-xl" oninput="calculateCashTotal()" />
+              </div>
+              <div>
+                <label class="block text-sm text-gray-600">₹5</label>
+                <input type="number" id="denom5" min="0" class="w-full px-4 py-2 border rounded-xl" oninput="calculateCashTotal()" />
               </div>
             </div>
           </div>
@@ -282,6 +290,11 @@
           </thead>
           <tbody id="reportTable" class="text-center"></tbody>
         </table>
+        <div class="flex justify-between mt-4">
+          <button onclick="prevPage('customer')" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-xl hover:bg-gray-400">Previous</button>
+          <span id="customerPageInfo" class="text-gray-700"></span>
+          <button onclick="nextPage('customer')" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-xl hover:bg-gray-400">Next</button>
+        </div>
       </section>
 
       <!-- Quick Report Section -->
@@ -316,6 +329,11 @@
           </thead>
           <tbody id="quickReportTable" class="text-center"></tbody>
         </table>
+        <div class="flex justify-between mt-4">
+          <button onclick="prevPage('quick')" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-xl hover:bg-gray-400">Previous</button>
+          <span id="quickPageInfo" class="text-gray-700"></span>
+          <button onclick="nextPage('quick')" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-xl hover:bg-gray-400">Next</button>
+        </div>
       </section>
 
       <!-- Thank You Message -->
@@ -337,6 +355,11 @@
     const quickReportTable = document.getElementById("quickReportTable");
     const searchInput = document.getElementById("searchInput");
     const quickSearchInput = document.getElementById("quickSearchInput");
+
+    // Pagination variables
+    let customerCurrentPage = 1;
+    let quickCurrentPage = 1;
+    const entriesPerPage = 15;
 
     // 🔁 Lock/unlock icon loop
     let locked = true;
@@ -419,10 +442,12 @@
       active.classList.remove("hidden");
       active.classList.add("fade-in");
       if (id === "report") {
+        customerCurrentPage = 1;
         loadData();
         searchInput.value = "";
         searchTable();
       } else if (id === "quickReport") {
+        quickCurrentPage = 1;
         loadQuickData();
         quickSearchInput.value = "";
         searchQuickTable();
@@ -432,7 +457,6 @@
     // Customer Entry Functions
     function loadData(searchTerm = "") {
       const entries = JSON.parse(localStorage.getItem("customers")) || [];
-      reportTable.innerHTML = "";
       const filteredEntries = entries.filter(entry =>
         entry.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         entry.mobile.includes(searchTerm) ||
@@ -440,24 +464,73 @@
         entry.wfcVisitingDate.includes(searchTerm) ||
         entry.gender.toLowerCase().includes(searchTerm.toLowerCase())
       );
-      filteredEntries.forEach((entry, index) => {
+      const startIndex = (customerCurrentPage - 1) * entriesPerPage;
+      const endIndex = startIndex + entriesPerPage;
+      const paginatedEntries = filteredEntries.slice(startIndex, endIndex);
+      reportTable.innerHTML = "";
+      paginatedEntries.forEach((entry, index) => {
+        const globalIndex = entries.indexOf(entry);
         const row = document.createElement("tr");
         row.innerHTML = `
-          <td class="border px-4 py-2">${index + 1}</td>
+          <td class="border px-4 py-2">${startIndex + index + 1}</td>
           <td class="border px-4 py-2">${entry.name}</td>
           <td class="border px-4 py-2">${entry.mobile}</td>
           <td class="border px-4 py-2">${entry.aadhaar}</td>
           <td class="border px-4 py-2">${entry.wfcVisitingDate}</td>
           <td class="border px-4 py-2">${entry.gender}</td>
           <td class="border px-4 py-2">
-            <button onclick="deleteEntry(${entries.indexOf(entry)})" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">🗑️ Delete</button>
+            <button onclick="deleteEntry(${globalIndex})" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">🗑️ Delete</button>
           </td>
         `;
         reportTable.appendChild(row);
       });
+      updatePaginationInfo('customer', filteredEntries.length);
+    }
+
+    function updatePaginationInfo(type, totalEntries) {
+      const pageInfo = type === 'customer' ? document.getElementById('customerPageInfo') : document.getElementById('quickPageInfo');
+      const currentPage = type === 'customer' ? customerCurrentPage : quickCurrentPage;
+      const totalPages = Math.ceil(totalEntries / entriesPerPage);
+      pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+    }
+
+    function prevPage(type) {
+      if (type === 'customer' && customerCurrentPage > 1) {
+        customerCurrentPage--;
+        loadData(searchInput.value);
+      } else if (type === 'quick' && quickCurrentPage > 1) {
+        quickCurrentPage--;
+        loadQuickData(quickSearchInput.value);
+      }
+    }
+
+    function nextPage(type) {
+      const entries = type === 'customer' ? JSON.parse(localStorage.getItem("customers")) || [] : JSON.parse(localStorage.getItem("quickCustomers")) || [];
+      const searchTerm = type === 'customer' ? searchInput.value : quickSearchInput.value;
+      const filteredEntries = entries.filter(entry =>
+        type === 'customer' ?
+          (entry.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          entry.mobile.includes(searchTerm) ||
+          entry.aadhaar.includes(searchTerm) ||
+          entry.wfcVisitingDate.includes(searchTerm) ||
+          entry.gender.toLowerCase().includes(searchTerm.toLowerCase())) :
+          (entry.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          entry.mobile.includes(searchTerm) ||
+          entry.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          entry.amount.toString().includes(searchTerm))
+      );
+      const totalPages = Math.ceil(filteredEntries.length / entriesPerPage);
+      if (type === 'customer' && customerCurrentPage < totalPages) {
+        customerCurrentPage++;
+        loadData(searchInput.value);
+      } else if (type === 'quick' && quickCurrentPage < totalPages) {
+        quickCurrentPage++;
+        loadQuickData(quickSearchInput.value);
+      }
     }
 
     function searchTable() {
+      customerCurrentPage = 1;
       const searchTerm = searchInput.value;
       loadData(searchTerm);
     }
@@ -538,40 +611,47 @@
         gender: document.getElementById("gender").value
       };
       const existing = JSON.parse(localStorage.getItem("customers")) || [];
-      existing.push(entry);
+      existing.unshift(entry); // Add new entry at the beginning
       localStorage.setItem("customers", JSON.stringify(existing));
       entryForm.reset();
       showThankYou();
+      customerCurrentPage = 1; // Show first page after new entry
       showSection("report");
     });
 
     // Quick Entry Functions
     function loadQuickData(searchTerm = "") {
       const quickEntries = JSON.parse(localStorage.getItem("quickCustomers")) || [];
-      quickReportTable.innerHTML = "";
       const filteredQuickEntries = quickEntries.filter(entry =>
         entry.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         entry.mobile.includes(searchTerm) ||
         entry.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
         entry.amount.toString().includes(searchTerm)
       );
-      filteredQuickEntries.forEach((entry, index) => {
+      const startIndex = (quickCurrentPage - 1) * entriesPerPage;
+      const endIndex = startIndex + entriesPerPage;
+      const paginatedQuickEntries = filteredQuickEntries.slice(startIndex, endIndex);
+      quickReportTable.innerHTML = "";
+      paginatedQuickEntries.forEach((entry, index) => {
+        const globalIndex = quickEntries.indexOf(entry);
         const row = document.createElement("tr");
         row.innerHTML = `
-          <td class="border px-4 py-2">${index + 1}</td>
+          <td class="border px-4 py-2">${startIndex + index + 1}</td>
           <td class="border px-4 py-2">${entry.name}</td>
           <td class="border px-4 py-2">${entry.mobile}</td>
           <td class="border px-4 py-2">${entry.type}</td>
           <td class="border px-4 py-2">${entry.amount}</td>
           <td class="border px-4 py-2">
-            <button onclick="deleteQuickEntry(${quickEntries.indexOf(entry)})" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">🗑️ Delete</button>
+            <button onclick="deleteQuickEntry(${globalIndex})" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">🗑️ Delete</button>
           </td>
         `;
         quickReportTable.appendChild(row);
       });
+      updatePaginationInfo('quick', filteredQuickEntries.length);
     }
 
     function searchQuickTable() {
+      quickCurrentPage = 1;
       const searchTerm = quickSearchInput.value;
       loadQuickData(searchTerm);
     }
@@ -656,22 +736,25 @@
         return;
       }
       const existingQuick = JSON.parse(localStorage.getItem("quickCustomers")) || [];
-      existingQuick.push(quickEntry);
+      existingQuick.unshift(quickEntry); // Add new entry at the beginning
       localStorage.setItem("quickCustomers", JSON.stringify(existingQuick));
       quickEntryForm.reset();
       showThankYou();
+      quickCurrentPage = 1; // Show first page after new entry
       showSection("quickReport");
     });
 
     // Cash Denomination Functions
     function calculateCashTotal() {
       const denominations = [
+        { id: "denom2000", value: 2000 },
         { id: "denom500", value: 500 },
         { id: "denom200", value: 200 },
         { id: "denom100", value: 100 },
         { id: "denom50", value: 50 },
         { id: "denom20", value: 20 },
-        { id: "denom10", value: 10 }
+        { id: "denom10", value: 10 },
+        { id: "denom5", value: 5 }
       ];
       let total = 0;
       denominations.forEach(denom => {
@@ -692,12 +775,14 @@
         name: document.getElementById("cashName").value.trim(),
         mobile: document.getElementById("cashMobile").value.trim(),
         amount: parseFloat(document.getElementById("cashAmount").value).toFixed(2),
+        denom2000: parseInt(document.getElementById("denom2000").value) || 0,
         denom500: parseInt(document.getElementById("denom500").value) || 0,
         denom200: parseInt(document.getElementById("denom200").value) || 0,
         denom100: parseInt(document.getElementById("denom100").value) || 0,
         denom50: parseInt(document.getElementById("denom50").value) || 0,
         denom20: parseInt(document.getElementById("denom20").value) || 0,
-        denom10: parseInt(document.getElementById("denom10").value) || 0
+        denom10: parseInt(document.getElementById("denom10").value) || 0,
+        denom5: parseInt(document.getElementById("denom5").value) || 0
       };
       if (!/^[0-9]{10}$/.test(cashEntry.mobile)) {
         alert("Please enter a valid 10-digit mobile number.");
