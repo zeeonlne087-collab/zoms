@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -98,6 +99,12 @@
         </button>
         <button onclick="showSection('quickReport')" class="flex items-center gap-2 w-full text-left px-4 py-2 rounded hover:bg-indigo-600">
           <i data-lucide="file-text" class="w-5 h-5"></i> Quick Report
+        </button>
+        <button onclick="showSection('ladkiEntry')" class="flex items-center gap-2 w-full text-left px-4 py-2 rounded hover:bg-indigo-600">
+          <i data-lucide="user-check" class="w-5 h-5"></i> Ladki Bahin eKYC Entry
+        </button>
+        <button onclick="showSection('ladkiReport')" class="flex items-center gap-2 w-full text-left px-4 py-2 rounded hover:bg-indigo-600">
+          <i data-lucide="file-text" class="w-5 h-5"></i> Ladki Bahin eKYC Report
         </button>
         <button onclick="logout()" class="flex items-center gap-2 w-full text-left px-4 py-2 rounded hover:bg-red-600">
           <i data-lucide="log-out" class="w-5 h-5"></i> Logout
@@ -336,6 +343,72 @@
         </div>
       </section>
 
+      <!-- Ladki Bahin eKYC Entry Section -->
+      <section id="ladkiEntry" class="hidden bg-white shadow-xl rounded-2xl p-6 max-w-3xl mx-auto fade-in">
+        <h2 class="text-2xl font-bold text-indigo-700 mb-6">Ladki Bahin eKYC Entry</h2>
+        <form id="ladkiEntryForm">
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">Name</label>
+            <input type="text" id="ladkiName" required class="w-full px-4 py-2 border rounded-xl" />
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">Aadhaar</label>
+            <input type="text" id="ladkiAadhaar" required pattern="[0-9]{12}" class="w-full px-4 py-2 border rounded-xl" />
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">Mobile</label>
+            <input type="tel" id="ladkiMobile" required pattern="[0-9]{10}" class="w-full px-4 py-2 border rounded-xl" />
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">Remarks</label>
+            <textarea id="ladkiRemarks" class="w-full px-4 py-2 border rounded-xl"></textarea>
+          </div>
+          <div class="flex justify-between">
+            <button type="submit" id="ladkiSaveBtn" class="bg-blue-600 text-white px-6 py-2 rounded-xl hover:bg-blue-700">Save</button>
+            <button onclick="resetLadkiForm()" class="bg-gray-300 text-gray-800 px-6 py-2 rounded-xl hover:bg-gray-400">Reset</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Ladki Bahin eKYC Report Section -->
+      <section id="ladkiReport" class="hidden bg-white shadow-xl rounded-2xl p-6 max-w-5xl mx-auto fade-in">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-semibold text-indigo-700">Ladki Bahin eKYC Report</h2>
+          <div class="flex gap-2">
+            <button onclick="exportLadkiToPDF()" class="bg-purple-600 text-white px-4 py-2 rounded-xl hover:bg-purple-700 flex items-center gap-2">
+              <i data-lucide="file-down" class="w-5 h-5"></i> Export PDF
+            </button>
+            <button onclick="exportLadkiToExcel()" class="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 flex items-center gap-2">
+              <i data-lucide="file-spreadsheet" class="w-5 h-5"></i> Export Excel
+            </button>
+            <button onclick="printLadkiReport()" class="bg-green-600 text-white px-4 py-2 rounded-xl hover:bg-green-700 flex items-center gap-2">
+              <i data-lucide="printer" class="w-5 h-5"></i> Print Report
+            </button>
+          </div>
+        </div>
+        <div class="mb-4">
+          <input type="text" id="ladkiSearchInput" placeholder="Search by Name, Aadhaar, Mobile, or Remarks" class="w-full px-4 py-2 border rounded-xl" oninput="searchLadkiTable()" />
+        </div>
+        <table class="w-full table-auto border text-sm md:text-base">
+          <thead>
+            <tr class="bg-indigo-200 text-left">
+              <th class="border px-4 py-2">#</th>
+              <th class="border px-4 py-2">Name</th>
+              <th class="border px-4 py-2">Aadhaar</th>
+              <th class="border px-4 py-2">Mobile</th>
+              <th class="border px-4 py-2">Remarks</th>
+              <th class="border px-4 py-2">Action</th>
+            </tr>
+          </thead>
+          <tbody id="ladkiReportTable" class="text-center"></tbody>
+        </table>
+        <div class="flex justify-between mt-4">
+          <button onclick="prevPage('ladki')" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-xl hover:bg-gray-400">Previous</button>
+          <span id="ladkiPageInfo" class="text-gray-700"></span>
+          <button onclick="nextPage('ladki')" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-xl hover:bg-gray-400">Next</button>
+        </div>
+      </section>
+
       <!-- Thank You Message -->
       <div id="thankYouMsg" class="fixed top-5 right-5 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg text-lg font-semibold hidden">
         ✅ Thanks for Entry!
@@ -355,11 +428,19 @@
     const quickReportTable = document.getElementById("quickReportTable");
     const searchInput = document.getElementById("searchInput");
     const quickSearchInput = document.getElementById("quickSearchInput");
+    const ladkiEntryForm = document.getElementById("ladkiEntryForm");
+    const ladkiReportTable = document.getElementById("ladkiReportTable");
+    const ladkiSearchInput = document.getElementById("ladkiSearchInput");
 
     // Pagination variables
     let customerCurrentPage = 1;
     let quickCurrentPage = 1;
+    let ladkiCurrentPage = 1;
     const entriesPerPage = 15;
+
+    // Ladki Edit variables
+    let isLadkiEdit = false;
+    let ladkiEditIndex = -1;
 
     // 🔁 Lock/unlock icon loop
     let locked = true;
@@ -431,7 +512,7 @@
     }
 
     function showSection(id) {
-      ["dashboard", "entry", "quickEntry", "cashDenomination", "report", "quickReport"].forEach(sec => {
+      ["dashboard", "entry", "quickEntry", "cashDenomination", "report", "quickReport", "ladkiEntry", "ladkiReport"].forEach(sec => {
         const el = document.getElementById(sec);
         if (el) {
           el.classList.add("hidden");
@@ -451,6 +532,11 @@
         loadQuickData();
         quickSearchInput.value = "";
         searchQuickTable();
+      } else if (id === "ladkiReport") {
+        ladkiCurrentPage = 1;
+        loadLadkiData();
+        ladkiSearchInput.value = "";
+        searchLadkiTable();
       }
     }
 
@@ -488,8 +574,18 @@
     }
 
     function updatePaginationInfo(type, totalEntries) {
-      const pageInfo = type === 'customer' ? document.getElementById('customerPageInfo') : document.getElementById('quickPageInfo');
-      const currentPage = type === 'customer' ? customerCurrentPage : quickCurrentPage;
+      let pageInfo;
+      let currentPage;
+      if (type === 'customer') {
+        pageInfo = document.getElementById('customerPageInfo');
+        currentPage = customerCurrentPage;
+      } else if (type === 'quick') {
+        pageInfo = document.getElementById('quickPageInfo');
+        currentPage = quickCurrentPage;
+      } else if (type === 'ladki') {
+        pageInfo = document.getElementById('ladkiPageInfo');
+        currentPage = ladkiCurrentPage;
+      }
       const totalPages = Math.ceil(totalEntries / entriesPerPage);
       pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
     }
@@ -501,12 +597,30 @@
       } else if (type === 'quick' && quickCurrentPage > 1) {
         quickCurrentPage--;
         loadQuickData(quickSearchInput.value);
+      } else if (type === 'ladki' && ladkiCurrentPage > 1) {
+        ladkiCurrentPage--;
+        loadLadkiData(ladkiSearchInput.value);
       }
     }
 
     function nextPage(type) {
-      const entries = type === 'customer' ? JSON.parse(localStorage.getItem("customers")) || [] : JSON.parse(localStorage.getItem("quickCustomers")) || [];
-      const searchTerm = type === 'customer' ? searchInput.value : quickSearchInput.value;
+      let entries, searchTerm, currentPageVar, loadFunc;
+      if (type === 'customer') {
+        entries = JSON.parse(localStorage.getItem("customers")) || [];
+        searchTerm = searchInput.value;
+        currentPageVar = customerCurrentPage;
+        loadFunc = loadData;
+      } else if (type === 'quick') {
+        entries = JSON.parse(localStorage.getItem("quickCustomers")) || [];
+        searchTerm = quickSearchInput.value;
+        currentPageVar = quickCurrentPage;
+        loadFunc = loadQuickData;
+      } else if (type === 'ladki') {
+        entries = JSON.parse(localStorage.getItem("ladkiEntries")) || [];
+        searchTerm = ladkiSearchInput.value;
+        currentPageVar = ladkiCurrentPage;
+        loadFunc = loadLadkiData;
+      }
       const filteredEntries = entries.filter(entry =>
         type === 'customer' ?
           (entry.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -514,18 +628,22 @@
           entry.aadhaar.includes(searchTerm) ||
           entry.wfcVisitingDate.includes(searchTerm) ||
           entry.gender.toLowerCase().includes(searchTerm.toLowerCase())) :
+        type === 'quick' ?
           (entry.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
           entry.mobile.includes(searchTerm) ||
           entry.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          entry.amount.toString().includes(searchTerm))
+          entry.amount.toString().includes(searchTerm)) :
+          (entry.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          entry.aadhaar.includes(searchTerm) ||
+          entry.mobile.includes(searchTerm) ||
+          (entry.remarks || "").toLowerCase().includes(searchTerm.toLowerCase()))
       );
       const totalPages = Math.ceil(filteredEntries.length / entriesPerPage);
-      if (type === 'customer' && customerCurrentPage < totalPages) {
-        customerCurrentPage++;
-        loadData(searchInput.value);
-      } else if (type === 'quick' && quickCurrentPage < totalPages) {
-        quickCurrentPage++;
-        loadQuickData(quickSearchInput.value);
+      if (currentPageVar < totalPages) {
+        if (type === 'customer') customerCurrentPage++;
+        else if (type === 'quick') quickCurrentPage++;
+        else if (type === 'ladki') ladkiCurrentPage++;
+        loadFunc(searchTerm);
       }
     }
 
@@ -801,6 +919,159 @@
       showSection("dashboard");
     });
 
+    // Ladki Bahin eKYC Functions
+    function loadLadkiData(searchTerm = "") {
+      const entries = JSON.parse(localStorage.getItem("ladkiEntries")) || [];
+      const filteredEntries = entries.filter(entry =>
+        entry.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        entry.aadhaar.includes(searchTerm) ||
+        entry.mobile.includes(searchTerm) ||
+        (entry.remarks || "").toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      const startIndex = (ladkiCurrentPage - 1) * entriesPerPage;
+      const endIndex = startIndex + entriesPerPage;
+      const paginatedEntries = filteredEntries.slice(startIndex, endIndex);
+      ladkiReportTable.innerHTML = "";
+      paginatedEntries.forEach((entry, index) => {
+        const globalIndex = entries.indexOf(entry);
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td class="border px-4 py-2">${startIndex + index + 1}</td>
+          <td class="border px-4 py-2">${entry.name}</td>
+          <td class="border px-4 py-2">${entry.aadhaar}</td>
+          <td class="border px-4 py-2">${entry.mobile}</td>
+          <td class="border px-4 py-2">${entry.remarks || ""}</td>
+          <td class="border px-4 py-2">
+            <button onclick="editLadkiEntry(${globalIndex})" class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600">✏️ Edit</button>
+            <button onclick="deleteLadkiEntry(${globalIndex})" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">🗑️ Delete</button>
+          </td>
+        `;
+        ladkiReportTable.appendChild(row);
+      });
+      updatePaginationInfo('ladki', filteredEntries.length);
+    }
+
+    function searchLadkiTable() {
+      ladkiCurrentPage = 1;
+      const searchTerm = ladkiSearchInput.value;
+      loadLadkiData(searchTerm);
+    }
+
+    function deleteLadkiEntry(index) {
+      const entries = JSON.parse(localStorage.getItem("ladkiEntries")) || [];
+      if (confirm("Are you sure you want to delete this entry?")) {
+        entries.splice(index, 1);
+        localStorage.setItem("ladkiEntries", JSON.stringify(entries));
+        loadLadkiData(ladkiSearchInput.value);
+      }
+    }
+
+    function editLadkiEntry(index) {
+      const entries = JSON.parse(localStorage.getItem("ladkiEntries")) || [];
+      const entry = entries[index];
+      document.getElementById("ladkiName").value = entry.name;
+      document.getElementById("ladkiAadhaar").value = entry.aadhaar;
+      document.getElementById("ladkiMobile").value = entry.mobile;
+      document.getElementById("ladkiRemarks").value = entry.remarks || "";
+      isLadkiEdit = true;
+      ladkiEditIndex = index;
+      document.getElementById("ladkiSaveBtn").textContent = "Update";
+      showSection('ladkiEntry');
+    }
+
+    function resetLadkiForm() {
+      ladkiEntryForm.reset();
+      isLadkiEdit = false;
+      ladkiEditIndex = -1;
+      document.getElementById("ladkiSaveBtn").textContent = "Save";
+    }
+
+    ladkiEntryForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const entry = {
+        name: document.getElementById("ladkiName").value.trim(),
+        aadhaar: document.getElementById("ladkiAadhaar").value.trim(),
+        mobile: document.getElementById("ladkiMobile").value.trim(),
+        remarks: document.getElementById("ladkiRemarks").value.trim()
+      };
+      if (!/^[0-9]{12}$/.test(entry.aadhaar)) {
+        alert("Please enter a valid 12-digit Aadhaar number.");
+        return;
+      }
+      if (!/^[0-9]{10}$/.test(entry.mobile)) {
+        alert("Please enter a valid 10-digit mobile number.");
+        return;
+      }
+      const entries = JSON.parse(localStorage.getItem("ladkiEntries")) || [];
+      if (isLadkiEdit) {
+        entries[ladkiEditIndex] = entry;
+        isLadkiEdit = false;
+        ladkiEditIndex = -1;
+        document.getElementById("ladkiSaveBtn").textContent = "Save";
+      } else {
+        entries.unshift(entry); // Add new entry at the beginning
+      }
+      localStorage.setItem("ladkiEntries", JSON.stringify(entries));
+      ladkiEntryForm.reset();
+      showThankYou();
+      ladkiCurrentPage = 1; // Show first page after save/update
+      showSection("ladkiReport");
+    });
+
+    function exportLadkiToPDF() {
+      const doc = new jsPDF();
+      doc.setFontSize(18);
+      doc.text("Ladki Bahin eKYC Report", 14, 20);
+      doc.setFontSize(12);
+      const entries = JSON.parse(localStorage.getItem("ladkiEntries")) || [];
+      const filteredEntries = entries.filter(entry =>
+        entry.name.toLowerCase().includes(ladkiSearchInput.value.toLowerCase()) ||
+        entry.aadhaar.includes(ladkiSearchInput.value) ||
+        entry.mobile.includes(ladkiSearchInput.value) ||
+        (entry.remarks || "").toLowerCase().includes(ladkiSearchInput.value.toLowerCase())
+      );
+      let y = 30;
+      doc.text("#   Name                  Aadhaar           Mobile            Remarks", 14, y);
+      y += 10;
+      doc.line(14, y, 196, y);
+      y += 10;
+      filteredEntries.forEach((entry, index) => {
+        doc.text(`${index + 1}   ${entry.name.padEnd(20)} ${entry.aadhaar.padEnd(15)} ${entry.mobile.padEnd(15)} ${entry.remarks || ""}`, 14, y);
+        y += 10;
+      });
+      doc.save("Ladki_Bahin_eKYC_Report.pdf");
+    }
+
+    function exportLadkiToExcel() {
+      const entries = JSON.parse(localStorage.getItem("ladkiEntries")) || [];
+      const filteredEntries = entries.filter(entry =>
+        entry.name.toLowerCase().includes(ladkiSearchInput.value.toLowerCase()) ||
+        entry.aadhaar.includes(ladkiSearchInput.value) ||
+        entry.mobile.includes(ladkiSearchInput.value) ||
+        (entry.remarks || "").toLowerCase().includes(ladkiSearchInput.value.toLowerCase())
+      );
+      const data = filteredEntries.map((entry, index) => ({
+        "#": index + 1,
+        Name: entry.name,
+        Aadhaar: entry.aadhaar,
+        Mobile: entry.mobile,
+        Remarks: entry.remarks || ""
+      }));
+      const ws = XLSX.utils.json_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "LadkiEntries");
+      XLSX.writeFile(wb, "Ladki_Bahin_eKYC_Report.xlsx");
+    }
+
+    function printLadkiReport() {
+      const printContent = document.getElementById("ladkiReport").outerHTML;
+      const originalContent = document.body.innerHTML;
+      document.body.innerHTML = printContent;
+      window.print();
+      document.body.innerHTML = originalContent;
+      location.reload();
+    }
+
     function showThankYou() {
       const msg = document.getElementById("thankYouMsg");
       msg.classList.remove("hidden");
@@ -825,3 +1096,4 @@
   </script>
 </body>
 </html>
+```
